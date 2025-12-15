@@ -1,0 +1,184 @@
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.uniform-poster {
+  object-fit: cover;
+  object-position: center;
+  min-height: 355px;
+}
+
+#home {
+  position: relative;
+  min-height: 100vh;
+  /* background-image: url("https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg"); Interstellar */
+  background-image: url("https://image.tmdb.org/t/p/original/hZkgoQYus5vegHoetLkCJzb17zJ.jpg"); /* Fight Club */
+  /* background-image: url("https://image.tmdb.org/t/p/original/iopYFB1b6Bh7FWZh3onQhph1sih.jpg"); Dune (2021) */
+  /* background-image: url("https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg");  Inception */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 300px;
+}
+
+#home .img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.85)
+  );
+  display: flex;
+  align-items: center;
+}
+
+.tmdb-score-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  border: 4px solid #21d07a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Kırmızı (imdb 0-3) */
+.score-red {
+  border-color: #d33f3f;
+}
+/* Turuncu (imdb 4-6) */
+.score-orange {
+  border-color: #f39c12;
+}
+/* Yeşil (imdb 7+) */
+.score-green {
+  border-color: #21d07a;
+}
+
+@media (max-width: 576px) {
+  .tmdb-score-circle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.1rem;
+    border-width: 3px;
+  }
+}
+
+.actor-photo {
+  width: 100%;
+  aspect-ratio: 2 / 3; /* poster oranı */
+  object-fit: cover;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  display: block;
+  background-color: #2a2a2a;
+}
+
+.actor-photo:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Ana film detay sayfasındaki büyük poster */
+.movie-detail-poster {
+  max-width: 380px;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6),
+    0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  transition: all 0.4s ease;
+  display: block;
+}
+
+.movie-detail-poster:hover {
+  transform: scale(1.04) translateY(-8px);
+  box-shadow: 0 30px 40px -10px rgba(0, 0 0 / 0.8);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 992px) {
+  .movie-detail-poster {
+    max-width: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-detail-poster {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .movie-detail-poster {
+    max-width: 180px;
+  }
+}
+
+.movie-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.35);
+}
+
+.movie-backdrop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(20, 20, 20, 0.95) 0%,
+    rgba(20, 20, 20, 0.7) 50%,
+    rgba(20, 20, 20, 0.4) 100%
+  );
+  pointer-events: none; /* tıklama vs. engellemesin */
+}
+
+.pagination-btn.btn-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pagination-btn.btn-light:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #000;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.poster-remove-btn {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+}
+
+.poster-remove-btn i {
+  font-size: 14px;
+  line-height: 1;
+}
