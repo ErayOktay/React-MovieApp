@@ -1,18 +1,15 @@
 import React, { useEffect, useState, useCallback, useContext } from "react";
-import { useParams, useNavigate } from "react-router";
+import { Link, useParams, useNavigate } from "react-router";
 import Loading from "../components/Loading";
 import SimilarMovies from "./SimilarMovies";
-import Footer from "../components/Footer";
 import { UserContext } from "../contexts/UserContext";
+import {
+  getMovieDetails,
+  getMovieCredits,
+  imageUrl,
+} from "../services/tmdb";
 
-const api_key = "38b433bd7b3d5056ece6f0bb98fa260d";
-const language = "tr-TR";
-const apiUrl = "https://api.themoviedb.org/3";
-const IMG_BASE_URL = "https://image.tmdb.org/t/p";
-const DEFAULT_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
-const DEFAULT_BACKDROP =
-  "https://via.placeholder.com/1280x720?text=No+Backdrop";
-const DEFAULT_PROFILE = "https://via.placeholder.com/185x278?text=No+Photo";
+const CAST_LIMIT = 12;
 
 export default function MovieDetails() {
   const { id } = useParams(); // URL'den film id'sini alıyoruz
@@ -41,38 +38,31 @@ export default function MovieDetails() {
 
   // Film detaylarını ve oyuncuları çek
   useEffect(() => {
+    if (!id) return;
+    const controller = new AbortController();
+
     async function fetchMovieDetails() {
-      if (!id) return;
-
       setLoading(true);
+      setMovie(null);
       try {
-        const [detailsRes, creditsRes] = await Promise.all([
-          fetch(
-            `${apiUrl}/movie/${id}?api_key=${api_key}&language=${language}`
-          ),
-          fetch(
-            `${apiUrl}/movie/${id}/credits?api_key=${api_key}&language=${language}`
-          ),
+        const [details, credits] = await Promise.all([
+          getMovieDetails(id, controller.signal),
+          getMovieCredits(id, controller.signal),
         ]);
-
-        if (!detailsRes.ok || !creditsRes.ok) throw new Error("API hatası");
-
-        const details = await detailsRes.json();
-        const credits = await creditsRes.json();
-
         setMovie(details);
-        setCast(credits.cast?.slice(0, 10) || []);
+        setCast(credits.cast?.slice(0, CAST_LIMIT) || []);
       } catch (err) {
+        if (err.name === "AbortError") return;
         console.error("Film detayları yüklenemedi:", err);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
 
     fetchMovieDetails();
+    return () => controller.abort();
   }, [id]);
 
-  // Yüklenememe durumu
   if (loading) {
     return (
       <div className="d-flex align-items-center justify-content-center vh-100 bg-black text-white">
@@ -105,12 +95,8 @@ export default function MovieDetails() {
   } = movie;
 
   const year = release_date ? new Date(release_date).getFullYear() : "—";
-  const posterUrl = poster_path
-    ? `${IMG_BASE_URL}/w500${poster_path}`
-    : DEFAULT_POSTER;
-  const backdropUrl = backdrop_path
-    ? `${IMG_BASE_URL}/w1280${backdrop_path}`
-    : DEFAULT_BACKDROP;
+  const posterUrl = imageUrl(poster_path, "w500");
+  const backdropUrl = imageUrl(backdrop_path, "w1280");
 
   const formatRuntime = (minutes) => {
     if (!minutes) return "—";
@@ -122,57 +108,70 @@ export default function MovieDetails() {
   return (
     <>
       <div
-        className="text-white position-relative w-100"
-        style={{ minHeight: "100vh", backgroundColor: "#141414" }}
+        className="text-white position-relative w-100 movie-detail-page"
+        style={{ backgroundColor: "#141414" }}
       >
         {/* Backdrop + Gradient */}
-        <div
-          className="movie-backdrop"
-          style={{ backgroundImage: `url(${backdropUrl})` }}
-        ></div>
+        {backdropUrl && (
+          <div
+            className="movie-backdrop"
+            style={{ backgroundImage: `url(${backdropUrl})` }}
+          ></div>
+        )}
 
         <div className="movie-backdrop-overlay"></div>
 
         {/* İçerik */}
-        <div className="position-relative container-fluid py-5 px-4 px-md-5">
+        <div className="position-relative container-fluid py-5 px-3 px-md-5">
           {/* Geri butonu */}
           <button
+            type="button"
             onClick={() => navigate(-1)}
             className="btn btn-outline-light btn-sm rounded-pill px-4 position-absolute top-0 end-0 mt-3 me-3 z-3"
           >
             ← Geri Dön
           </button>
 
-          {loading && <Loading />}
-
-          <div className="row g-5 align-items-start">
+          <div className="row g-4 g-lg-5 align-items-start">
             {/* Poster */}
             <div className="col-lg-4 col-xl-3 text-center text-lg-start">
-              <img
-                src={posterUrl}
-                alt={title}
-                className="movie-detail-poster img-fluid"
-              />
+              {posterUrl ? (
+                <img
+                  src={posterUrl}
+                  alt={`${title} afişi`}
+                  className="movie-detail-poster img-fluid"
+                />
+              ) : (
+                <div
+                  className="movie-detail-poster movie-poster-fallback"
+                  role="img"
+                  aria-label="Afiş yok"
+                >
+                  <i className="bi bi-film" aria-hidden="true"></i>
+                </div>
+              )}
             </div>
 
             {/* Bilgiler */}
-            <div className="col-lg-8 col-xl-9 ps-4 ps-md-5">
+            <div className="col-lg-8 col-xl-9 ps-lg-4">
               <h1 className="display-5 fw-bold mb-2">{title}</h1>
               {original_title && original_title !== title && (
                 <p className="text-secondary mb-3">({original_title})</p>
               )}
 
-              <div className="d-flex flex-wrap gap-3 align-items-center mb-4">
+              <div className="d-flex flex-wrap gap-2 gap-md-3 align-items-center mb-4">
                 <span className="bg-danger px-3 py-1 rounded fw-bold small">
                   {year}
                 </span>
                 {genres.map((g) => (
-                  <span
+                  <Link
                     key={g.id}
-                    className="bg-dark border border-secondary px-3 py-1 rounded small"
+                    to={`/genre/${g.id}`}
+                    className="genre-badge"
+                    aria-label={`${g.name} türündeki filmleri gör`}
                   >
                     {g.name}
-                  </span>
+                  </Link>
                 ))}
                 {production_countries.length > 0 && (
                   <span className="bg-dark border border-secondary px-3 py-1 rounded small">
@@ -203,31 +202,37 @@ export default function MovieDetails() {
                   {vote_count.toLocaleString("tr-TR")} oy
                 </div>
 
-                {isAddedToWatchList ? (
-                  <span
-                    className="badge bg-danger fs-5 ms-2 pointer"
-                    onClick={() => removeFromWatchList(movie)}
-                  >
-                    <i className="bi bi-heart-fill"></i>
-                  </span>
-                ) : (
-                  <span
-                    className="badge bg-danger fs-5 ms-2 pointer"
-                    onClick={() => addToWatchList(movie)}
-                  >
-                    <i className="bi bi-heart"></i>
-                  </span>
-                )}
+                <button
+                  type="button"
+                  className="btn btn-danger fs-5 ms-2 px-3 py-1"
+                  onClick={() =>
+                    isAddedToWatchList
+                      ? removeFromWatchList(movie)
+                      : addToWatchList(movie)
+                  }
+                  aria-pressed={Boolean(isAddedToWatchList)}
+                  aria-label={
+                    isAddedToWatchList
+                      ? "İzlenecekler listesinden çıkar"
+                      : "İzlenecekler listesine ekle"
+                  }
+                >
+                  <i
+                    className={`bi ${
+                      isAddedToWatchList ? "bi-heart-fill" : "bi-heart"
+                    }`}
+                  ></i>
+                </button>
               </div>
 
               {tagline && (
-                <p className="fst-italic fs-4 text-light mb-5 opacity-90">
+                <p className="fst-italic fs-5 fs-md-4 text-light mb-4 opacity-90">
                   "{tagline}"
                 </p>
               )}
 
-              <h3 className="fw-bold mb-3">Özet</h3>
-              <p className="fs-5 lh-lg text-light mb-5">
+              <h2 className="h3 fw-bold mb-3">Özet</h2>
+              <p className="fs-6 fs-md-5 lh-lg text-light mb-4">
                 {overview || "Özet bulunamadı."}
               </p>
             </div>
@@ -235,42 +240,46 @@ export default function MovieDetails() {
 
           {/* Oyuncular */}
           {cast.length > 0 && (
-            <div className="mt-5 pt-4 border-top border-secondary border-opacity-25">
-              <h3 className="fw-bold mb-4">Başroller</h3>
-              <div className="row g-3 g-md-4">
-                {cast
-                  .filter((actor) => actor.profile_path) // Sadece fotoğrafı olanları al
-                  .map((actor) => (
-                    <div
-                      key={actor.cast_id}
-                      className="col-4 col-sm-3 col-md-2 col-lg-2 col-xl-1"
-                    >
-                      <div className="text-center">
-                        <img
-                          src={
-                            actor.profile_path
-                              ? `${IMG_BASE_URL}/w154${actor.profile_path}`
-                              : DEFAULT_PROFILE
-                          }
-                          alt={actor.name}
-                          className="actor-photo mb-2"
-                        />
-                        <p className="mb-0 small fw-600 text-truncate">
+            <section className="mt-5 pt-4 border-top border-secondary border-opacity-25">
+              <h2 className="h3 fw-bold mb-4">Başroller</h2>
+              <ul className="cast-grid list-unstyled mb-0">
+                {cast.map((actor) => {
+                  const photo = imageUrl(actor.profile_path, "w185");
+                  return (
+                    <li key={actor.credit_id}>
+                      <Link
+                        to={`/person/${actor.id}`}
+                        className="cast-card"
+                        aria-label={`${actor.name}, ${actor.character || "rol bilgisi yok"} — oyuncu sayfası`}
+                      >
+                        {photo ? (
+                          <img
+                            src={photo}
+                            alt=""
+                            className="actor-photo mb-2"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="actor-photo actor-photo-fallback mb-2" aria-hidden="true">
+                            <i className="bi bi-person-fill"></i>
+                          </div>
+                        )}
+                        <p className="mb-0 small fw-semibold text-truncate">
                           {actor.name}
                         </p>
-                        <p className="text-secondary small text-truncate">
+                        <p className="text-secondary small text-truncate mb-0">
                           {actor.character}
                         </p>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
           )}
         </div>
       </div>
       <SimilarMovies movieId={id} />
-      <Footer />
     </>
   );
 }

@@ -1,107 +1,12 @@
-# 🎬 TMDB Film Sitesi
+# React + Vite
 
-Bu proje, **TMDB (The Movie Database) API** kullanılarak geliştirilmiş, kullanıcıların filmleri keşfedebildiği ve detaylı film bilgilerine ulaşabildiği modern bir **React** tabanlı web uygulamasıdır.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Kullanıcılar site üzerinden:
+Currently, two official plugins are available:
 
-* Popüler ve güncel filmleri görüntüleyebilir
-* İstedikleri filmleri aratabilir
-* Bir filmin detay sayfasında oyuncu kadrosu, tür, IMDb puanı, özet gibi bilgilere ulaşabilir
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-Proje, sade ve kullanıcı dostu bir arayüz hedeflenerek geliştirilmiştir.
+## Expanding the ESLint configuration
 
----
-
-## 🚀 Özellikler
-
-* 🎥 Film listeleme (popüler / arama sonuçları)
-* 🔍 Film arama
-* 📄 Detay sayfası (poster, özet, türler, IMDb puanı, yapım ülkesi vb.)
-* 🌗 Dark / Light tema desteği
-* 📱 Responsive tasarım (mobil uyumlu)
-* 📑 Sayfalama (Pagination)
-
----
-
-## 🛠️ Kullanılan Teknolojiler
-
-* **React** – Bileşen tabanlı modern frontend geliştirme
-* **JSX** – React bileşen yapısı
-* **Bootstrap 5** – Responsive ve hızlı arayüz geliştirme
-* **TMDB API** – Film verilerinin sağlanması
-* **JavaScript (ES6+)**
-
----
-
-## 🔑 TMDB API Kullanımı
-
-Bu proje, film verilerini almak için **TMDB API** kullanmaktadır.
-
-Uygulamayı çalıştırabilmek için bir TMDB API anahtarına ihtiyacınız vardır.
-
-1. TMDB sitesine kayıt olun
-2. API Key oluşturun
-3. Proje kök dizininde `.env` dosyası oluşturun
-
-```env
-VITE_TMDB_API_KEY=API_KEYİNİZ
-```
-
----
-
-## ⚙️ Kurulum ve Çalıştırma
-
-Projeyi yerel ortamda çalıştırmak için aşağıdaki adımları izleyin:
-
-```bash
-# Depoyu klonlayın
-git clone https://github.com/kullanici-adi/proje-adi.git
-
-# Proje dizinine girin
-cd proje-adi
-
-# Bağımlılıkları yükleyin
-npm install
-
-# Uygulamayı başlatın
-npm run dev
-```
-
-Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışacaktır.
-
----
-
-## 📁 Proje Yapısı (Özet)
-
-```text
-src/
- ├─ components/      # Tekrar kullanılabilir bileşenler
- ├─ pages/           # Sayfa bileşenleri (Home, Detail, Search vb.)
- ├─ services/        # TMDB API istekleri
- ├─ context/         # Tema ve global state yönetimi
- ├─ App.jsx
- └─ main.jsx
-```
-
----
-
-## 🎯 Geliştirme Hedefleri
-
-* Kullanıcı hesabı ve favori filmler
-* Watchlist özelliği
-* Film fragmanlarının eklenmesi
-* Gelişmiş filtreleme (tür, yıl, puan)
-
----
-
-## 📌 Notlar
-
-Bu proje eğitim ve portföy amaçlı geliştirilmiştir. TMDB tarafından sağlanan veriler, TMDB kullanım koşullarına tabidir.
-
----
-
-## 👤 Geliştirici
-
-**Eray Oktay**
-
-Bu projeyle ilgili geri bildirim veya katkılarınızı memnuniyetle paylaşabilirsiniz.
+If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

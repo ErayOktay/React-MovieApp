@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState } from "react";
 import Loading from "./Loading";
 
-const api_key = "38b433bd7b3d5056ece6f0bb98fa260d";
+const api_key = import.meta.env.VITE_TMDB_API_KEY;
 const language = "tr-TR";
 const IMG_BASE_URL = "https://image.tmdb.org/t/p";
 const DEFAULT_POSTER = "https://via.placeholder.com/500x750?text=No+Image";

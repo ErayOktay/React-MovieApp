@@ -11,7 +11,7 @@ import Loading from "./components/Loading";
 import ErrorMessage from "./components/ErrorMessage";
 import MovieDetails from "./components/MovieDetails";
 
-const api_key = "38b433bd7b3d5056ece6f0bb98fa260d";
+const api_key = import.meta.env.VITE_TMDB_API_KEY;
 const page = 1;
 const language = "tr-TR";
 

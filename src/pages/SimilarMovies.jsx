@@ -1,89 +1,43 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../components/Loading";
-import ErrorMessage from "../components/ErrorMessage";
 import MovieList from "../components/MovieList";
-
-const apiUrl = "https://api.themoviedb.org/3";
-const api_key = "38b433bd7b3d5056ece6f0bb98fa260d";
-const page = 1;
-const language = "tr-TR";
+import { getSimilarMovies } from "../services/tmdb";
 
 function SimilarMovies({ movieId }) {
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function getMovies() {
-      const loading = true;
-      setLoading(loading);
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
 
-      try {
-        const response = await fetch(
-          `${apiUrl}/movie/${movieId}/similar?api_key=${api_key}&language=${language}&page=${page}&append_to_response=credits`
-        );
+    getSimilarMovies(movieId, controller.signal)
+      .then((data) => setMovies(data.results || []))
+      .catch((err) => {
+        if (err.name !== "AbortError") setError(err.message);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
 
-        if (response.status === 401) {
-          throw new Error(
-            "Uygulamada bir yetkilendirme sorunu var. Kısa süre içinde düzeltilecektir."
-          );
-        } else if (response.status === 404) {
-          throw new Error(
-            "Sunucu adresi geçici olarak bulunamıyor. Lütfen daha sonra tekrar deneyin."
-          );
-        } else if (response.status === 429) {
-          throw new Error(
-            "Sunucu şu anda yoğun. Birkaç saniye sonra tekrar deneyin."
-          );
-        } else if (response.status >= 500) {
-          throw new Error(
-            "Sunucuda geçici bir sorun var. Lütfen biraz sonra tekrar deneyin."
-          );
-        } else if (!response.ok) {
-          throw new Error(
-            "Bağlantı kurulurken bir sorun oluştu. Lütfen daha sonra tekrar deneyin."
-          );
-        }
-
-        const data = await response.json();
-
-        setMovies(data.results || []);
-        setError("");
-      } catch (error) {
-        if (error.message.includes("ERR_NAME_NOT_RESOLVED")) {
-          setError(
-            "Sunucu adresine ulaşılamıyor. Uygulama kısa süre içinde düzeltilecektir."
-          );
-        } else if (!navigator.onLine) {
-          setError(
-            "İnternet bağlantınız yok. Lütfen Wi-Fi veya mobil verinizi kontrol edin."
-          );
-        } else if (
-          error.name === "TypeError" &&
-          error.message.includes("Failed to fetch")
-        ) {
-          setError("Sunucuya bağlantı kurulamadı.");
-        } else {
-          setError(
-            error.message ||
-              "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
-          );
-        }
-      }
-      setLoading(false);
-    }
-
-    getMovies();
+    return () => controller.abort();
   }, [movieId]);
 
-  if (loading) {
-    return <Loading />;
-  }
-  if (error) {
-    return <ErrorMessage message={error} />;
-  }
-
-  return <MovieList movies={movies} title="Benzer Filmler" />;
+  return (
+    <div className="container-xl py-4">
+      {loading ? (
+        <Loading />
+      ) : error ? (
+        <p className="text-body-secondary text-center mb-0">
+          Benzer filmler yüklenemedi.
+        </p>
+      ) : (
+        <MovieList movies={movies} title="Benzer Filmler" />
+      )}
+    </div>
+  );
 }
 
 export default SimilarMovies;

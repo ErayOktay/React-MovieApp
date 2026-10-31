@@ -9,6 +9,11 @@ import ThemeContext from "./contexts/ThemeContext";
 import UserWatchList from "./pages/UserWatchList";
 import Login from "./pages/LoginState";
 import Register from "./pages/Register";
+import CategoryPage from "./pages/CategoryPage";
+import GenrePage from "./pages/GenrePage";
+import GenresPage from "./pages/GenresPage";
+import PersonDetails from "./pages/PersonDetails";
+import NotFound from "./pages/NotFound";
 
 const routes = createBrowserRouter([
   {
@@ -24,8 +29,32 @@ const routes = createBrowserRouter([
         element: <Movies />,
       },
       {
+        path: "movies/top-rated",
+        element: <CategoryPage category="top-rated" />,
+      },
+      {
+        path: "movies/upcoming",
+        element: <CategoryPage category="upcoming" />,
+      },
+      {
+        path: "movies/now-playing",
+        element: <CategoryPage category="now-playing" />,
+      },
+      {
         path: "movies/:id",
         element: <MovieDetails />,
+      },
+      {
+        path: "genres",
+        element: <GenresPage />,
+      },
+      {
+        path: "genre/:genreId",
+        element: <GenrePage />,
+      },
+      {
+        path: "person/:id",
+        element: <PersonDetails />,
       },
       {
         path: "search", // search?q=father
@@ -42,6 +71,10 @@ const routes = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },

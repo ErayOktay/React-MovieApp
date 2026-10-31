@@ -1,5 +1,7 @@
 import React from "react";
+import { Link } from "react-router";
 import SearchForm from "../components/SearchForm";
+import { CATEGORIES } from "../utils/categories";
 
 function Home() {
   return (
@@ -17,6 +19,27 @@ function Home() {
               <div className=" bg-opacity-75 p-4 rounded-3 shadow">
                 <SearchForm />
               </div>
+
+              <nav
+                aria-label="Film kategorileri"
+                className="d-flex flex-wrap justify-content-center gap-2 mt-4"
+              >
+                {CATEGORIES.map((c) => (
+                  <Link
+                    key={c.key}
+                    to={c.to}
+                    className="btn btn-outline-light btn-sm rounded-pill px-3"
+                  >
+                    {c.short}
+                  </Link>
+                ))}
+                <Link
+                  to="/genres"
+                  className="btn btn-outline-light btn-sm rounded-pill px-3"
+                >
+                  Türler
+                </Link>
+              </nav>
             </div>
           </div>
         </div>

@@ -3,18 +3,18 @@ import ThemeContext from "../contexts/ThemeContext";
 
 function ThemeSelector() {
   const { theme, setTheme } = useContext(ThemeContext);
+  const isDark = theme === "dark";
 
   return (
-    <div className="theme-selector mx-4 mt-1 fs-5 pointer">
-      <i
-        className={`bi ${
-          theme === "dark" ? "bi-sun-fill" : "bi-moon-stars-fill"
-        } text-white fs-5 pointer`}
-        onClick={() => {
-          setTheme(theme === "dark" ? "light" : "dark");
-        }}
-      ></i>
-    </div>
+    <button
+      type="button"
+      className="btn btn-outline-light btn-sm theme-selector"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={isDark ? "Açık temaya geç" : "Koyu temaya geç"}
+      title={isDark ? "Açık tema" : "Koyu tema"}
+    >
+      <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-stars-fill"}`}></i>
+    </button>
   );
 }
 

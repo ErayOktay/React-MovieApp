@@ -1,6 +1,5 @@
 import React, { useContext, useRef } from "react";
 import ThemeContext from "../contexts/ThemeContext";
-import Footer from "../components/Footer";
 
 function Register() {
   const { theme } = useContext(ThemeContext);
@@ -239,7 +238,6 @@ function Register() {
         </div>
       </div>
 
-      <Footer />
     </>
   );
 }

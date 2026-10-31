@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import ThemeContext from "../contexts/ThemeContext";
-import Footer from "../components/Footer";
 import Input from "../components/Input";
 import useInput from "../hooks/useInput";
 import { hasMinLength, isEmail, isNotEmpty } from "../utils/validations";
@@ -78,7 +77,6 @@ function Login() {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

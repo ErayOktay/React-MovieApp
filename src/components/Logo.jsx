@@ -1,8 +1,11 @@
+import { Link } from "react-router";
+
 function Logo() {
   return (
-    <a href="/" className="navbar-brand">
+    <Link to="/" className="navbar-brand fw-bold">
+      <i className="bi bi-film me-2" aria-hidden="true"></i>
       Movie App
-    </a>
+    </Link>
   );
 }
 

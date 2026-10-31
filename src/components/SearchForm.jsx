@@ -1,7 +1,7 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 
-function SearchForm() {
+function SearchForm({ className = "" }) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -9,37 +9,32 @@ function SearchForm() {
     e.preventDefault();
     const query = searchQuery.trim();
     if (query) {
-      navigate(`/search?q=${encodeURIComponent(query)}`); // navigate sayfada query aratıldığında sayfanın resetlenmemesini sağlar
+      navigate(`/search?q=${encodeURIComponent(query)}`); // navigate sayfanın yeniden yüklenmesini önler
       setSearchQuery("");
     }
   }
 
   return (
-    <>
-      <div className="ms-auto py-1">
-        <form className="d-flex" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <input
-              type="search"
-              className="form-control border"
-              placeholder="Film ara..."
-              aria-label="Film ara"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button
-              className="btn btn-outline-light input-group-text border"
-              type="submit"
-            >
-              <i className="bi bi-search fs-6"></i>
-            </button>
-          </div>
-        </form>
+    <form className={`search-form ${className}`} role="search" onSubmit={handleSubmit}>
+      <div className="input-group">
+        <input
+          type="search"
+          className="form-control"
+          placeholder="Film ara..."
+          aria-label="Film ara"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button
+          className="btn btn-outline-light input-group-text"
+          type="submit"
+          aria-label="Ara"
+        >
+          <i className="bi bi-search fs-6"></i>
+        </button>
       </div>
-    </>
+    </form>
   );
 }
 
 export default SearchForm;
-
-// ms-auto otomatik sağa yaslar me-auto ise sola yaslar
